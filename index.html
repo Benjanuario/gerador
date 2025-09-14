@@ -129,7 +129,9 @@
       <li><i class="fas fa-book"></i> Tema</li>
       <li><i class="fas fa-cog"></i> Definições</li>
       <li><i class="fas fa-info-circle"></i> Sobre</li>
-      <li onclick="mostrarTermos()"><i class="fas fa-shield-alt"></i> Termos e Políticas</li>
+      <li onclick="window.location.href='termos.html'">
+  <i class="fas fa-shield-alt"></i> Termos e Políticas
+</li>
     </ul>
   </nav>
   <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
@@ -195,9 +197,6 @@
     }
     function fecharFormulario() {
       document.getElementById('form-modal').classList.remove('active');
-    }
-    function mostrarTermos() {
-      alert("Termos e Políticas de Uso:\n\nEste sistema foi desenvolvido para apoiar professores no processo de planejamento didático de forma prática, acessível e automatizada.\n\nTodos os dados inseridos pelos usuários serão tratados com responsabilidade.\n\nO sistema é gratuito e não se responsabiliza por decisões tomadas com base nos planos gerados.");
     }
 
     function mostrarHistorico() {
