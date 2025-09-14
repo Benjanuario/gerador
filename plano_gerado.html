@@ -442,7 +442,33 @@ function voltarAoFormulario() {
   document.getElementById('planoFinal').style.display = 'none';
   document.getElementById('btnVoltarFormulario').style.display = 'none';
 }
+function irParaPagamento() {
+  const planoData = {
+    escola: document.forms['planoForm'].escola.value,
+    professor: document.forms['planoForm'].professor.value,
+    disciplina: document.forms['planoForm'].disciplina.value,
+    unidade: document.forms['planoForm'].unidade.value,
+    tema: document.forms['planoForm'].tema.value,
+    tipo: document.forms['planoForm'].tipo.value,
+    classe: document.forms['planoForm'].classe.value,
+    turma: document.forms['planoForm'].turma.value,
+    licao: document.forms['planoForm'].licao.value,
+    duracao: document.forms['planoForm'].duracao.value,
+    data: document.forms['planoForm'].data.value,
+    materiais: materiais,
+    objetivos: document.getElementById('objetivosCampo').value,
+    tabela: document.getElementById('tabelaPlano').outerHTML,
+    anexoTipo: anexoSalvo ? anexoSalvo.tipo : null,
+    anexoImagem: (anexoSalvo && anexoSalvo.tipo === 'imagem') ? anexoSalvo.data : null,
+    anexoTexto: (anexoSalvo && anexoSalvo.tipo === 'texto') ? anexoSalvo.data : ""
+  };
 
+  // Salva os dados para o pagamento.html recuperar
+  sessionStorage.setItem("planoData", JSON.stringify(planoData));
+
+  // Vai para a tela de pagamento
+  window.location.href = "pagamento.html";
+        }
 /* ---------- Adicionar Atividade ---------- */
 function abrirNovoBloco(){
   const container = document.getElementById('novoBlocoContainer');
