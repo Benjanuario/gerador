@@ -31,6 +31,24 @@
       border: 1px solid #ccc;
       border-radius: 2px;
     }
+    /* Impedir seleção de texto apenas no preview final (#planoFinal) */
+#planoFinal {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Exceção: permitir edição/seleção nos campos configurados como editáveis */
+#planoFinal input,
+#planoFinal textarea,
+#planoFinal select,
+#planoFinal [contenteditable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
   </style>
 </head>
 <body>
@@ -52,16 +70,16 @@
           <label>Classe:</label>
           <select name="classe" required>
             <option value="">Selecione a classe</option>
-            <option value="1">1ª Classe</option><option value="2">2ª Classe</option><option value="3">3ª Classe</option>
-            <option value="4">4ª Classe</option><option value="5">5ª Classe</option><option value="6">6ª Classe</option>
-            <option value="7">7ª Classe</option><option value="8">8ª Classe</option><option value="9">9ª Classe</option>
-            <option value="10">10ª Classe</option><option value="11">11ª Classe</option><option value="12">12ª Classe</option>
+            <option value="1ª">1ª Classe</option><option value="2ª">2ª Classe</option><option value="3ª">3ª Classe</option>
+            <option value="4ª">4ª Classe</option><option value="5ª">5ª Classe</option><option value="6ª">6ª Classe</option>
+            <option value="7ª">7ª Classe</option><option value="8ª">8ª Classe</option><option value="9ª">9ª Classe</option>
+            <option value="10ª">10ª Classe</option><option value="11ª">11ª Classe</option><option value="12ª">12ª Classe</option>
           </select>
           <label>Turma:</label><input type="text" name="turma" required />
           <label>Lição nº:</label><input type="number" name="licao" min="1" step="1" />
           <label>Duração:</label>
           <select name="duracao" required><option value="45">45 minutos</option><option value="90">90 minutos</option></select>
-          <label>Data:</label><input type="date" name="data" required />
+          <label>Data:</label><input type="date" name="data" required/>
           <label style="margin-top:8px;"><input type="checkbox" id="usarMateriais" onchange="alternarCampoMaterial()"> Aula exige material didático?</label>
           <div id="adicionarMaterialDiv" style="display:none;">
             <label>Adicionar material:</label>
@@ -84,16 +102,21 @@
       </div>
 
       <div style="margin-top:10px;">
-        <button type="button" onclick="gerarPlano()">Gerar Plano de Aula</button>
+        <button type="button" onclick="iniciarGeracaoPlano()">Gerar Plano de Aula</button>
       </div>
     </form>
 
     <div id="avisoExportacao" class="small" style="display:none;color:#c00;">⚠️ Exporte o plano em modo horizontal para melhor visualização em PDF.</div>
     <div id="mensagem"></div>
 
-    <!-- PREVIEW / PLANO -->
-    <div id="planoFinal" style="display:none; margin-top:16px;">
-      <h3>PLANO DE AULA</h3>
+<!-- Botão voltar ao formulário -->
+<button id="btnVoltarFormulario" onclick="voltarAoFormulario()" style="display:none; margin-bottom:10px;">
+  Voltar ao Formulário 👆
+</button>
+
+<!-- PREVIEW / PLANO -->
+<div id="planoFinal" style="display:none; margin-top:16px;">
+  <h3>PLANO DE AULA</h3>
       <div class="row">
         <div class="col" id="dadosEsquerda"></div>
         <div class="col" id="dadosDireita"></div>
@@ -118,7 +141,7 @@
       </table>
 
       <div style="margin-top:10px;">
-        <button type="button" onclick="abrirNovoBloco()">+ Adicionar Atividade</button>
+        <button type="button" onclick="abrirNovoBloco()">+ Adicionar Actividade</button>
         <div id="novoBlocoContainer"></div>
       </div>
 
@@ -156,321 +179,252 @@
       </div>
     </div>
   </div>
+<!-- LOADER MODERNO -->
+<div id="loaderPlano" style="display:none; flex-direction: column; align-items: center; justify-content: center; margin:20px 0;">
+  <div class="circle" style="width:120px; height:120px; border:10px solid #ddd; border-top:10px solid #4CAF50; border-radius:50%; position:relative; animation: spin 1s linear infinite;">
+    <div class="percentage" id="percentText" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:20px; font-weight:bold;">0%</div>
+  </div>
+  <div class="message" id="loaderMessage" style="margin-top:20px; font-size:16px; font-style:italic;">Iniciando...</div>
+</div>
 
-  <!-- ======= SCRIPTS CORRIGIDOS ======= -->
-  <script>
-    /* ---------- dados e constantes ---------- */
-    const verbosCognitivos = ["identificar","descrever","classificar","definir","explicar","relacionar","enumerar","comparar","analisar","sintetizar"];
-    const verbosPsicomotores = ["desenhar","montar","construir","organizar","manipular","demonstrar","executar","medir","simular","experimentar"];
-    const verbosAfetivos = ["valorizar","respeitar","cooperar","participar","aceitar","comprometer-se","defender","refletir","apreciar","internalizar"];
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<script>
+/* ---------- dados e constantes ---------- */
+const verbosCognitivos = ["identificar","descrever","classificar","definir","explicar","relacionar","enumerar","comparar","analisar","sintetizar"];
+const verbosPsicomotores = ["desenhar","montar","construir","organizar","manipular","demonstrar","executar","medir","simular","experimentar"];
+const verbosAfetivos = ["valorizar","respeitar","cooperar","participar","aceitar","comprometer-se","defender","refletir","apreciar","internalizar"];
 
-    const metodosEnsino = [
-      "Elaboração conjunta","Expositivo-Explicativo","Trabalho Independente",
-      "Trabalho em Grupo","Participativo / Interativo","Demonstrativo / Prático",
-      "Resolução de Problemas"
-    ];
+const metodosEnsino = [
+  "Elaboração conjunta","Expositivo-Explicativo","Trabalho Independente",
+  "Trabalho em Grupo","Participativo / Interativo","Demonstrativo / Prático",
+  "Resolução de Problemas"
+];
 
-    let materiais = [];
-    let imagemDataURL = null;
-    let anexoSalvo = null;
+let materiais = [];
+let imagemDataURL = null;
+let anexoSalvo = null;
 
-    /* ---------- utilitários ---------- */
-    function escapeHtml(str){
-      if (!str) return '';
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'&quot;');
+// ======= Bloquear cópia só no preview =======
+(function(){
+  const plano = document.getElementById('planoFinal');
+  if (!plano) return;
+
+  // Bloqueia clique direito dentro do preview
+  plano.addEventListener('contextmenu', function(e){
+    e.preventDefault();
+  });
+
+  // Bloqueia Ctrl+C, Ctrl+X, Ctrl+U apenas no preview
+  document.addEventListener('keydown', function(e){
+    const inside = plano.contains(document.activeElement) || plano === document.activeElement;
+    if (!inside) return;
+    if ((e.ctrlKey || e.metaKey) && ["c","x","s","u"].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+  });
+})();
+
+/* ---------- utilitários ---------- */
+function escapeHtml(str){
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'&quot;');
+}
+
+function mostrarMensagem(msg){
+  const el = document.getElementById('mensagem');
+  el.textContent = msg;
+  el.style.color = '#0b6';
+  setTimeout(()=>el.textContent='', 4000);
+}
+
+function criarSelectMetodo(selected){
+  let s = '<select class="metodoSelect">';
+  for (const m of metodosEnsino){
+    s += `<option value="${m}" ${m === selected ? 'selected' : ''}>${m}</option>`;
+  }
+  s += '</select>';
+  return s;
+}
+
+/* ---------- Materiais ---------- */
+function alternarCampoMaterial(){
+  document.getElementById('adicionarMaterialDiv').style.display = document.getElementById('usarMateriais').checked ? 'block' : 'none';
+}
+
+function adicionarMaterial(){
+  const input = document.getElementById('inputMaterial');
+  const valor = input.value.trim();
+  if (!valor) { 
+    alert('Escreve o material antes de adicionar.'); 
+    return; 
+  }
+  materiais.push(valor);
+  const li = document.createElement('li');
+  li.textContent = valor;
+  document.getElementById('listaMateriais').appendChild(li);
+  input.value = '';
+  mostrarMensagem('Material adicionado.');
+}
+
+/* ---------- Objetivos ---------- */
+function gerarObjetivosLocal(){
+  const tema = document.forms['planoForm'].tema.value.trim();
+  if (!tema){ 
+    alert("Por favor, preencha o tema da aula primeiro."); 
+    return; 
+  }
+  gerarNovosObjetivos();
+}
+
+function gerarNovosObjetivos(){
+  const tema = document.forms['planoForm'].tema.value.trim();
+  if (!tema) return;
+
+  const vC = verbosCognitivos[Math.floor(Math.random()*verbosCognitivos.length)];
+  const vP = verbosPsicomotores[Math.floor(Math.random()*verbosPsicomotores.length)];
+  const vA = verbosAfetivos[Math.floor(Math.random()*verbosAfetivos.length)];
+
+  const objetivos = [
+    `${vC.charAt(0).toUpperCase()+vC.slice(1)} os conceitos fundamentais de "${tema}"`,
+    `${vP.charAt(0).toUpperCase()+vP.slice(1)} uma atividade prática relacionada a "${tema}"`,
+    `${vA.charAt(0).toUpperCase()+vA.slice(1)} a importância de "${tema}" no contexto social`
+  ];
+
+  document.getElementById('objetivosCampo').value = objetivos.join(";\n");
+  mostrarMensagem('Objetivos gerados.');
+}
+function mostrarLoader(callback) {
+  const loader = document.getElementById('loaderPlano');
+  const percentText = document.getElementById('percentText');
+  const loaderMessage = document.getElementById('loaderMessage');
+
+  loader.style.display = 'flex';
+
+  let progress = 0;
+  const messages = [
+    { msg: "Coletando Dados...", perc: 25 },
+    { msg: "Fazendo o Plano de Aula...", perc: 50 },
+    { msg: "Determinando Métodos de Ensino...", perc: 75 },
+    { msg: "Finalizando o Plano...", perc: 100 }
+  ];
+  let currentMsgIndex = 0;
+
+  const interval = setInterval(() => {
+    progress++;
+    percentText.textContent = progress + '%';
+
+    if (progress >= messages[currentMsgIndex].perc) {
+      loaderMessage.textContent = messages[currentMsgIndex].msg;
+      currentMsgIndex++;
     }
 
-    function mostrarMensagem(msg){
-      const el = document.getElementById('mensagem');
-      el.textContent = msg;
-      el.style.color = '#0b6';
-      setTimeout(()=>el.textContent='', 4000);
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        loader.style.display = 'none';
+        if (callback) callback(); // mostra o plano depois do loader
+      }, 500);
     }
+  }, 60); // ← alterado para 60ms por incremento → ~6s total
+}
 
-    function criarSelectMetodo(selected){
-      let s = '<select class="metodoSelect">';
-      for (const m of metodosEnsino){
-        s += `<option value="${m}" ${m === selected ? 'selected' : ''}>${m}</option>`;
-      }
-      s += '</select>';
-      return s;
+function iniciarGeracaoPlano() {
+  document.forms['planoForm'].style.display = 'none';
+  document.getElementById('planoFinal').style.display = 'none';
+  
+  mostrarLoader(gerarPlano);
+}
+/* ---------- Gerar Plano ---------- */
+function gerarPlano(){
+  const form = document.forms['planoForm'];
+
+  // Validação
+  const requiredFields = ['escola', 'professor', 'disciplina', 'tema', 'classe', 'turma', 'duracao', 'data'];
+  for (const fieldName of requiredFields) {
+    if (!form[fieldName].value.trim()) {
+      alert(`O campo "${fieldName}" é obrigatório.`);
+      form[fieldName].focus();
+      return;
     }
+  }
 
-    /* ---------- Materiais ---------- */
-    function alternarCampoMaterial(){
-      document.getElementById('adicionarMaterialDiv').style.display = document.getElementById('usarMateriais').checked ? 'block' : 'none';
-    }
+  // Cabeçalhos
+  document.getElementById('dadosEsquerda').innerHTML = `
+    <p><strong>Escola:</strong> ${escapeHtml(form.escola.value)}</p>
+    <p><strong>Professor:</strong> ${escapeHtml(form.professor.value)}</p>
+    <p><strong>Disciplina:</strong> ${escapeHtml(form.disciplina.value)}</p>
+    <p><strong>Unidade Temática:</strong> ${escapeHtml(form.unidade.value)}</p>
+    <p><strong>Tema:</strong> ${escapeHtml(form.tema.value)}</p>
+    <p><strong>Tipo de Aula:</strong> ${escapeHtml(form.tipo.value)}</p>`;
 
-    function adicionarMaterial(){
-      const input = document.getElementById('inputMaterial');
-      const valor = input.value.trim();
-      if (!valor) { 
-        alert('Escreve o material antes de adicionar.'); 
-        return; 
-      }
-      materiais.push(valor);
-      const li = document.createElement('li');
-      li.textContent = valor;
-      document.getElementById('listaMateriais').appendChild(li);
-      input.value = '';
-      mostrarMensagem('Material adicionado.');
-    }
+  document.getElementById('dadosDireita').innerHTML = `
+    <p><strong>Classe:</strong> ${escapeHtml(form.classe.value)}</p>
+    <p><strong>Turma:</strong> ${escapeHtml(form.turma.value)}</p>
+    <p><strong>Lição nº:</strong> ${escapeHtml(form.licao.value || "—")}</p>
+    <p><strong>Duração:</strong> ${escapeHtml(form.duracao.value)} minutos</p>
+    <p><strong>Data:</strong> ${form.data.value}</p>
+    ${materiais.length ? `<p><strong>Materiais:</strong><br>${materiais.map(m => `• ${escapeHtml(m)}`).join('<br>')}</p>` : ''}`;
 
-    /* ---------- Objetivos ---------- */
-    function gerarObjetivosLocal(){
-      const tema = document.forms['planoForm'].tema.value.trim();
-      if (!tema){ 
-        alert("Por favor, preencha o tema da aula primeiro."); 
-        return; 
-      }
-      gerarNovosObjetivos();
-    }
+  // Objetivos
+  const objetivosText = form.objetivos.value.trim();
+  document.getElementById('listaObjetivos').innerHTML = objetivosText ? objetivosText.split(';\n').map(l=>`<li>${escapeHtml(l)}</li>`).join('') : '';
 
-    function gerarNovosObjetivos(){
-      const tema = document.forms['planoForm'].tema.value.trim();
-      if (!tema) return;
+  // --- TABELA (CORPO) ---
+  const classeNum = String(form.classe.value || '').replace(/[^\d]/g,'');
+  const isClasseInicial = (classeNum === '1' || classeNum === '2');
+  const meiosEnsinoIniciais = 'Livro do aluno';
+  const meiosEnsinoNormais = 'Quadro, giz, livro do aluno, esferográfica';
+  const duracao = parseInt(form.duracao.value || 45, 10);
+  const fator = duracao === 90 ? 2 : 1;
+  const tempo1 = `${5 * fator} min`, tempo2 = `${20 * fator} min`, tempo3 = `${10 * fator} min`, tempo4 = `${10 * fator} min`;
 
-      const vC = verbosCognitivos[Math.floor(Math.random()*verbosCognitivos.length)];
-      const vP = verbosPsicomotores[Math.floor(Math.random()*verbosPsicomotores.length)];
-      const vA = verbosAfetivos[Math.floor(Math.random()*verbosAfetivos.length)];
+  const tabelaCorpo = document.getElementById('tabelaCorpo');
+  tabelaCorpo.innerHTML = `
+    <tr data-funcao="Introdução e Motivação">
+      <td>${escapeHtml(tempo1)}</td>
+      <td><strong>Introdução e Motivação</strong></td>
+      <td contenteditable="true">• Saudação<br>• Marcação de presença<br>• Recapitulação da aula anterior<br>• Apresentação do tema "${escapeHtml(form.tema.value)}"</td>
+      <td contenteditable="true">• Saúda os alunos<br>• Faz a marcação de presenças<br>• Orienta a recapitulação da aula anterior<br>• Introduz o tema "${escapeHtml(form.tema.value)}"</td>
+      <td contenteditable="true">• Saúdam o professor<br>• Confirma a presença<br>• Recapitulam a aula anterior sob orientação do professor<br>• Anotam o tema</td>
+      <td>${criarSelectMetodo("Elaboração conjunta")}</td>
+      <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : meiosEnsinoNormais}</td>
+    </tr>
+    <tr data-funcao="Mediação e Assimilação">
+      <td>${escapeHtml(tempo2)}</td>
+      <td>Mediação e Assimilação</td>
+      <td contenteditable="true">• Exploração dos possíveis pressupostos dos alunos<br>• Explicação do tema "${escapeHtml(form.tema.value)}"<br>• Esclarecimento das possíveis dúvidas</td>
+      <td contenteditable="true">• Explora possíveis ideias dos alunos<br>• Explica o conteúdo<br>• Procura sanar as possíveis dúvidas<br>• Passa o apontamento no quadro</td>
+      <td contenteditable="true">• Expõem as possíveis ideias<br>• Prestam atenção na explicação<br>• Expõem as possíveis dúvidas relacionadas ao tema<br>• Transcrevem o apontamento para os seus cadernos</td>
+      <td>${criarSelectMetodo("Elaboração conjunta")}</td>
+      <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Quadro, giz, livro do aluno, cartaz'}</td>
+    </tr>
+    <tr data-funcao="Domínio e Consolidação">
+      <td>${escapeHtml(tempo3)}</td>
+      <td>Domínio e Consolidação</td>
+      <td contenteditable="true">Exercícios sobre aplicação</td>
+      <td contenteditable="true">• Passa os exercícios no quadro<br>• Orienta a resolução dos exercícios<br>• Passa de carteira em carteira a verificar a resolução</td>
+      <td contenteditable="true">• Transcrevem os exercícios aos cadernos<br>• Resolvem os exercícios no ${isClasseInicial ? 'livro do aluno' : 'caderno'} individualmente</td>
+      <td>${criarSelectMetodo("Trabalho Independente")}</td>
+      <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Caderno, esferográfica, livro do aluno'}</td>
+    </tr>
+    <tr data-funcao="Controlo e Avaliação">
+      <td>${escapeHtml(tempo4)}</td>
+      <td>Controlo e Avaliação</td>
+      <td contenteditable="true">• Correção dos exercícios<br>• Breve resumo da aula<br>• Marcação do TPC</td>
+      <td contenteditable="true">• Corrige os exercícios apresentados<br>• Resume os pontos principais<br>• Faz a marcação o TPC</td>
+      <td contenteditable="true">• Apresentam os exercícios corrigidos<br>• Prestam atenção e anotam o resumo<br>• Anotam o TPC no ${isClasseInicial ? 'livro do aluno' : 'caderno'}</td>
+      <td>${criarSelectMetodo("Trabalho Independente")}</td>
+      <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Quadro, caderno, esferográfica, apagador'}</td>
+    </tr>`;
 
-      const objetivos = [
-        `${vC.charAt(0).toUpperCase()+vC.slice(1)} os conceitos fundamentais de "${tema}"`,
-        `${vP.charAt(0).toUpperCase()+vP.slice(1)} uma atividade prática relacionada a "${tema}"`,
-        `${vA.charAt(0).toUpperCase()+vA.slice(1)} a importância de "${tema}" no contexto social`
-      ];
-
-      document.getElementById('objetivosCampo').value = objetivos.join(";\n");
-      mostrarMensagem('Objetivos gerados.');
-    }
-
-    /* ---------- Gerar Plano ---------- */
-    function gerarPlano(){
-      const form = document.forms['planoForm'];
-
-      // Validação
-      const requiredFields = ['escola', 'professor', 'disciplina', 'tema', 'classe', 'turma', 'duracao', 'data'];
-      for (const fieldName of requiredFields) {
-        if (!form[fieldName].value.trim()) {
-          alert(`O campo "${fieldName}" é obrigatório.`);
-          form[fieldName].focus();
-          return;
-        }
-      }
-
-      // Cabeçalhos
-      document.getElementById('dadosEsquerda').innerHTML = `
-        <p><strong>Escola:</strong> ${escapeHtml(form.escola.value)}</p>
-        <p><strong>Professor:</strong> ${escapeHtml(form.professor.value)}</p>
-        <p><strong>Disciplina:</strong> ${escapeHtml(form.disciplina.value)}</p>
-        <p><strong>Unidade Temática:</strong> ${escapeHtml(form.unidade.value)}</p>
-        <p><strong>Tema:</strong> ${escapeHtml(form.tema.value)}</p>
-        <p><strong>Tipo de Aula:</strong> ${escapeHtml(form.tipo.value)}</p>`;
-
-      document.getElementById('dadosDireita').innerHTML = `
-        <p><strong>Classe:</strong> ${escapeHtml(form.classe.value)}</p>
-        <p><strong>Turma:</strong> ${escapeHtml(form.turma.value)}</p>
-        <p><strong>Lição nº:</strong> ${escapeHtml(form.licao.value || "—")}</p>
-        <p><strong>Duração:</strong> ${escapeHtml(form.duracao.value)} minutos</p>
-         form.data.value}</p>
-        ${materiais.length ? `<p><strong>Materiais:</strong><br>${materiais.map(m => `• ${escapeHtml(m)}`).join('<br>')}</p>` : ''}`;
-
-      // Objetivos
-      const objetivosText = form.objetivos.value.trim();
-      document.getElementById('listaObjetivos').innerHTML = objetivosText ? objetivosText.split(';\n').map(l=>`<li>${escapeHtml(l)}</li>`).join('') : '';
-
-      // --- TABELA (CORPO) --- (Esta parte estava faltando!)
-      const classe = String(form.classe.value || '').replace(/[^\d]/g,'');
-      const isClasseInicial = (classe === '1' || classe === '2');
-      const meiosEnsinoIniciais = 'Livro do aluno';
-      const meiosEnsinoNormais = 'Quadro, giz, livro do aluno, esferográfica';
-      const duracao = parseInt(form.duracao.value || 45, 10);
-      const fator = duracao === 90 ? 2 : 1;
-      const tempo1 = `${5 * fator} min`, tempo2 = `${20 * fator} min`, tempo3 = `${10 * fator} min`, tempo4 = `${10 * fator} min`;
-
-      const tabelaCorpo = document.getElementById('tabelaCorpo');
-      tabelaCorpo.innerHTML = `
-        <tr data-funcao="Introdução e Motivação">
-          <td>${escapeHtml(tempo1)}</td>
-          <td><strong>Introdução e Motivação</strong></td>
-          <td contenteditable="true">• Saudação<br>• Marcação de presença<br>• Recapitulação da aula anterior<br>• Apresentação do tema "${escapeHtml(form.tema.value)}"</td>
-          <td contenteditable="true">• Saúda os alunos<br>• Faz a marcação de presenças<br>• Orienta a recapitulação da aula anterior<br>• Introduz o tema "${escapeHtml(form.tema.value)}"</td>
-          <td contenteditable="true">• Saúdam o professor<br>• Confirma a presença<br>• Recapitulam a aula anterior sob orientação do professor<br>• Anotam o tema</td>
-          <td>${criarSelectMetodo("Elaboração conjunta")}</td>
-          <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : meiosEnsinoNormais}</td>
-        </tr>
-        <tr data-funcao="Mediação e Assimilação">
-          <td>${escapeHtml(tempo2)}</td>
-          <td>Mediação e Assimilação</td>
-          <td contenteditable="true">• Exploração dos possíveis pressupostos dos alunos<br>• Explicação do tema "${escapeHtml(form.tema.value)}"<br>• Esclarecimento das possíveis dúvidas</td>
-          <td contenteditable="true">• Explora possíveis ideias dos alunos<br>• Explica o conteúdo<br>• Procura sanar as possíveis dúvidas<br>• Passa o apontamento no quadro</td>
-          <td contenteditable="true">• Expõem as possíveis ideias<br>• Prestam atenção na explicação<br>• Expõem as possíveis dúvidas relacionadas ao tema<br>• Transcrevem o apontamento para os seus cadernos</td>
-          <td>${criarSelectMetodo("Elaboração conjunta")}</td>
-          <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Quadro, giz, livro do aluno, cartaz'}</td>
-        </tr>
-        <tr data-funcao="Domínio e Consolidação">
-          <td>${escapeHtml(tempo3)}</td>
-          <td>Domínio e Consolidação</td>
-          <td contenteditable="true">Exercícios sobre aplicação</td>
-          <td contenteditable="true">• Passa os exercícios no quadro<br>• Orienta a resolução dos exercícios<br>• Passa de carteira em carteira a verificar a resolução</td>
-          <td contenteditable="true">• Transcrevem os exercícios aos cadernos<br>• Resolvem os exercícios no ${isClasseInicial ? 'livro do aluno' : 'caderno'} individualmente</td>
-          <td>${criarSelectMetodo("Trabalho Independente")}</td>
-          <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Caderno, esferográfica, livro do aluno'}</td>
-        </tr>
-        <tr data-funcao="Controlo e Avaliação">
-          <td>${escapeHtml(tempo4)}</td>
-          <td>Controlo e Avaliação</td>
-          <td contenteditable="true">• Correção dos exercícios<br>• Breve resumo da aula<br>• Marcação do TPC</td>
-          <td contenteditable="true">• Corrige os exercícios apresentados<br>• Resume os pontos principais<br>• Faz a marcação o TPC</td>
-          <td contenteditable="true">• Apresentam os exercícios corrigidos<br>• Prestam atenção e anotam o resumo<br>• Anotam o TPC no ${isClasseInicial ? 'livro do aluno' : 'caderno'}</td>
-          <td>${criarSelectMetodo("Trabalho Independente")}</td>
-          <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Quadro, caderno, esferográfica, apagador'}</td>
-        </tr>`;
-
-      // Mostrar preview
-      document.getElementById('planoFinal').style.display = 'block';
-      document.getElementById('avisoExportacao').style.display = 'block';
-      setTimeout(()=>document.getElementById('avisoExportacao').style.display='none', 9000);
-
-      // Salvar plano
-      atualizarPlanoSalvo();
-      mostrarMensagem('Plano gerado e salvo na sessão.');
-      atualizarBotaoAnexoInferior();
-    }
-
-    /* ---------- Adicionar Atividade ---------- */
-    function abrirNovoBloco(){
-      const container = document.getElementById('novoBlocoContainer');
-      container.innerHTML = '';
-      const div = document.createElement('div');
-      div.className = 'novoBloco';
-      div.innerHTML = `
-        <label>Escolha a Função Didáctica:</label>
-        <select id="seletorFuncaoAdd">
-          <option>Introdução e Motivação</option>
-          <option>Mediação e Assimilação</option>
-          <option>Domínio e Consolidação</option>
-          <option>Controlo e Avaliação</option>
-        </select>
-        <label style="margin-top:8px">Conteúdo (nova atividade):</label>
-        <textarea id="conteudoNovo" style="height:60px;"></textarea>
-        <label style="margin-top:6px">Atividade do professor:</label>
-        <textarea id="profNovo" style="height:60px;"></textarea>
-        <label style="margin-top:6px">Atividade dos alunos:</label>
-        <textarea id="alunoNovo" style="height:60px;"></textarea>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-          <button type="button" onclick="adicionarAtividadeAoBloco()">Adicionar</button>
-          <button type="button" onclick="document.getElementById('novoBlocoContainer').innerHTML = '';" style="background:#ccc;color:#000;">Cancelar</button>
-        </div>
-      `;
-      container.appendChild(div);
-    }
-
-    function adicionarAtividadeAoBloco(){
-      const func = document.getElementById('seletorFuncaoAdd').value;
-      const conteudo = document.getElementById('conteudoNovo').value.trim();
-      const prof = document.getElementById('profNovo').value.trim();
-      const aluno = document.getElementById('alunoNovo').value.trim();
-      if (!conteudo && !prof && !aluno){
-        alert('Preenche pelo menos um campo para adicionar.');
-        return;
-      }
-
-      const trs = document.querySelectorAll('#tabelaCorpo tr');
-      let found = false;
-      for (const tr of trs){
-        const funcNome = (tr.getAttribute('data-funcao') || '').trim().toLowerCase();
-        if (funcNome && funcNome === func.toLowerCase()){
-          if (conteudo) {
-            const td = tr.cells[2];
-            td.innerHTML = td.innerHTML.trim() ? td.innerHTML + `<br>• ${escapeHtml(conteudo)}` : `• ${escapeHtml(conteudo)}`;
-          }
-          if (prof) {
-            const td = tr.cells[3];
-            td.innerHTML = td.innerHTML.trim() ? td.innerHTML + `<br>• ${escapeHtml(prof)}` : `• ${escapeHtml(prof)}`;
-          }
-          if (aluno) {
-            const td = tr.cells[4];
-            td.innerHTML = td.innerHTML.trim() ? td.innerHTML + `<br>• ${escapeHtml(aluno)}` : `• ${escapeHtml(aluno)}`;
-          }
-          found = true;
-          break;
-        }
-      }
-      if (!found){
-        alert('Função didáctica não encontrada na tabela.');
-        return;
-      }
-      document.getElementById('novoBlocoContainer').innerHTML = '';
-      mostrarMensagem('Atividade adicionada ao bloco.');
-      atualizarPlanoSalvo();
-    }
-
-    /* ---------- Anexos ---------- */
-    function mostrarImagem(event){
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e){
-        imagemDataURL = e.target.result;
-        document.getElementById('visualizarImagem').src = imagemDataURL;
-        document.getElementById('visualizarImagem').style.display = 'block';
-        document.getElementById('botaoSalvarAnexoInferior').style.display = 'inline-block';
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function alternarTipoAnexo(){
-      const tipo = document.getElementById('tipoAnexo').value;
-      document.getElementById('opcaoImagem').style.display = tipo === 'imagem' ? 'block' : 'none';
-      document.getElementById('opcaoTexto').style.display = tipo === 'texto' ? 'block' : 'none';
-    }
-
-    function salvarAnexo(tipoForcado = null){
-      const tipo = tipoForcado || document.getElementById('tipoAnexo').value;
-      if (tipo === 'imagem'){
-        if (!imagemDataURL){
-          alert('Nenhuma imagem selecionada.');
-          return;
-        }
-        anexoSalvo = { tipo: 'imagem',  imagemDataURL };
-        mostrarMensagem('Anexo de imagem salvo.');
-      } else if (tipo === 'texto'){
-        const texto = document.getElementById('textoAnexo').value.trim();
-        if (!texto){
-          alert('O texto do anexo está vazio.');
-          return;
-        }
-        anexoSalvo = { tipo: 'texto',  texto };
-        mostrarMensagem('Anexo de texto salvo.');
-      }
-      atualizarBotaoAnexoInferior();
-    }
-
-    function atualizarBotaoAnexoInferior(){
-      const btn = document.getElementById('botaoSalvarAnexoInferior');
-      btn.style.display = anexoSalvo ? 'inline-block' : 'none';
-    }
-
-    /* ---------- Salvar Plano ---------- */
-    function atualizarPlanoSalvo(){
-      const planoData = {
-        html: document.getElementById('planoFinal').innerHTML,
-        materiais: [...materiais],
-        anexoSalvo: anexoSalvo
-      };
-      sessionStorage.setItem('planoData', JSON.stringify(planoData));
-    }
-
-    /* ---------- Navegação ---------- */
-    function irParaPagamento(){
-      atualizarPlanoSalvo();
-      if (!sessionStorage.getItem('planoData')){
-        alert('⚠️ Nenhum plano gerado. Cria um plano antes de exportar.');
-        return;
-      }
-      window.location.href = 'pagamento.html';
-    }
-  </script>
-</body>
-</html>
+  // Mostrar preview
+  document.getElementById('planoFinal').style.display = 'block';
+  document.getElementById('btnVoltarFormulario').style.display = 'inline-block'; // ← mostra botão
+  document.forms['planoForm'].style.display = 'none'; // ← esconde formulário
+  document.getElementById('avisoExportacao').style.display = 'block';
+  setTimeout(()=>document.getElementById('
