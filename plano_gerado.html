@@ -139,42 +139,11 @@
         </thead>
         <tbody id="tabelaCorpo"></tbody>
       </table>
-
-      <div style="margin-top:10px;">
-        <button type="button" onclick="abrirNovoBloco()">+ Adicionar Actividade</button>
+      
+      <div style="margin-to;">
+        <Benjanuario type="button" onclick="abrirNovoBloco()">
         <div id="novoBlocoContainer"></div>
       </div>
-
-      <div id="selecaoTipoAnexo" style="margin-top:12px;">
-        <label><strong>Como deseja adicionar o anexo?</strong></label>
-        <select id="tipoAnexo" onchange="alternarTipoAnexo()">
-          <option value="imagem">Imagem (foto do livro)</option>
-          <option value="texto">Texto explicativo</option>
-        </select>
-      </div>
-
-      <div id="opcaoImagem" style="margin-top:8px;">
-        <input type="file" id="inputImagem" accept="image/*" capture="environment" onchange="mostrarImagem(event)">
-        <img id="visualizarImagem" src="" alt="Pré-visualização" style="display:none; max-width:100%; margin-top:8px;"/>
-        <div style="margin-top:6px;">
-          <button type="button" onclick="salvarAnexo('imagem')">Salvar Anexo (Imagem)</button>
-        </div>
-      </div>
-
-      <div id="opcaoTexto" style="display:none; margin-top:8px;">
-        <label for="textoAnexo"><strong>Digite o conteúdo do anexo:</strong></label>
-        <textarea id="textoAnexo" placeholder="Ex: resumo do conteúdo..." style="width:100%; height:90px;"></textarea>
-        <div style="margin-top:6px;">
-          <button type="button" onclick="salvarAnexo('texto')">Salvar Anexo (Texto)</button>
-        </div>
-      </div>
-
-      <div style="margin-top:8px;">
-        <button id="botaoSalvarAnexoInferior" type="button" onclick="salvarAnexo()" >Salvar Anexo</button>
-      </div>
-
-      <div style="margin-top:10px;">
-        <button type="button" onclick="atualizarPlanoSalvo()">Atualizar / Salvar Plano</button>
         <button type="button" onclick="irParaPagamento()" style="margin-left:8px;">Exportar para PDF</button>
       </div>
     </div>
@@ -185,6 +154,10 @@
     <div class="percentage" id="percentText" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:20px; font-weight:bold;">0%</div>
   </div>
   <div class="message" id="loaderMessage" style="margin-top:20px; font-size:16px; font-style:italic;">Iniciando...</div>
+
+  <!-- BOTÃO visível DURANTE o loader -->
+  <button id="loaderVoltarBtn" style="display:none; margin-top:12px; padding:8px 12px; border-radius:6px; border:1px solid #ccc; background:#fff; cursor:pointer;"
+          onclick="cancelarLoader()">Voltar ao Formulário</button>
 </div>
 
 <style>
@@ -243,20 +216,32 @@ function mostrarMensagem(msg){
 }
 
 function criarSelectMetodo(selected){
-  let s = '<select class="metodoSelect">';
+  const id = 'metodo_' + Math.random().toString(36).substr(2, 9);
+  let s = `<select class="metodoSelect" id="${id}" onchange="mostrarMetodoEscolhido(this)">`;
+  s += `<option value="">-- Selecione --</option>`;
   for (const m of metodosEnsino){
     s += `<option value="${m}" ${m === selected ? 'selected' : ''}>${m}</option>`;
   }
-  s += '</select>';
+  s += `</select>`;
+  // Texto exibido logo abaixo do select
+  s += `<div class="metodoEscolhidoTexto" style="font-size:11px;color:#007bff;margin-top:4px;">${selected || ""}</div>`;
   return s;
+}
+function mostrarMetodoEscolhido(selectEl){
+  const container = selectEl.nextElementSibling;
+  container.textContent = selectEl.value || "";
 }
 
 /* ---------- Materiais ---------- */
 function alternarCampoMaterial(){
   document.getElementById('adicionarMaterialDiv').style.display = document.getElementById('usarMateriais').checked ? 'block' : 'none';
 }
-
 function adicionarMaterial(){
+  if (materiais.length >= 4) {
+    alert('Só é permitido adicionar no máximo 4 materiais didáticos.');
+    return;
+  }
+
   const input = document.getElementById('inputMaterial');
   const valor = input.value.trim();
   if (!valor) { 
@@ -298,12 +283,49 @@ function gerarNovosObjetivos(){
   document.getElementById('objetivosCampo').value = objetivos.join(";\n");
   mostrarMensagem('Objetivos gerados.');
 }
+// Variável global para controlar o interval do loader
+let _planoLoaderInterval = null;
+
+// Cancela o loader em execução e restaura o formulário
+function cancelarLoader() {
+  // limpa interval se estiver a correr
+  if (_planoLoaderInterval) {
+    clearInterval(_planoLoaderInterval);
+    _planoLoaderInterval = null;
+  }
+
+  // esconde o loader (se visível)
+  const loader = document.getElementById('loaderPlano');
+  if (loader) loader.style.display = 'none';
+
+  // esconde o botão dentro do loader
+  const loaderVoltar = document.getElementById('loaderVoltarBtn');
+  if (loaderVoltar) loaderVoltar.style.display = 'none';
+
+  // mostra o formulário de novo
+  const form = document.forms['planoForm'];
+  if (form) form.style.display = 'block';
+
+  // garante que o preview/planoFinal fica escondido
+  const planoFinal = document.getElementById('planoFinal');
+  if (planoFinal) planoFinal.style.display = 'none';
+
+  // mostra também o botão de voltar (caso queira usar)
+  const fallbackBtn = document.getElementById('btnVoltarFormulario');
+  if (fallbackBtn) fallbackBtn.style.display = 'inline-block';
+}
 function mostrarLoader(callback) {
   const loader = document.getElementById('loaderPlano');
   const percentText = document.getElementById('percentText');
   const loaderMessage = document.getElementById('loaderMessage');
+  const loaderVoltar = document.getElementById('loaderVoltarBtn');
 
+  // mostra o loader e o botão "Voltar ao Formulário" (durante o processamento)
   loader.style.display = 'flex';
+  if (loaderVoltar) loaderVoltar.style.display = 'inline-block';
+
+  percentText.textContent = '0%';
+  loaderMessage.textContent = 'Iniciando...';
 
   let progress = 0;
   const messages = [
@@ -325,12 +347,18 @@ function mostrarLoader(callback) {
 
     if (progress >= 100) {
       clearInterval(interval);
+      _planoLoaderInterval = null;
       setTimeout(() => {
+        // esconde o botão do loader antes de continuar
+        if (loaderVoltar) loaderVoltar.style.display = 'none';
         loader.style.display = 'none';
-        if (callback) callback(); // mostra o plano depois do loader
+        if (callback) callback(); // chama o callback (ex.: gerarPlano)
       }, 500);
     }
-  }, 60); // ← alterado para 60ms por incremento → ~6s total
+  }, 60);
+
+  // guarda o interval globalmente para podermos cancelá-lo
+  _planoLoaderInterval = interval;
 }
 
 function iniciarGeracaoPlano() {
@@ -339,19 +367,39 @@ function iniciarGeracaoPlano() {
   
   mostrarLoader(gerarPlano);
 }
+function cancelarLoader() {
+  if (typeof _planoLoaderInterval !== "undefined" && _planoLoaderInterval) {
+    clearInterval(_planoLoaderInterval);
+    _planoLoaderInterval = null;
+  }
+
+  const loader = document.getElementById('loaderPlano');
+  if (loader) loader.style.display = 'none';
+
+  const voltarBtn = document.getElementById('loaderVoltarBtn');
+  if (voltarBtn) voltarBtn.style.display = 'none';
+
+  const form = document.forms['planoForm'];
+  if (form) form.style.display = 'block';
+
+  const planoFinal = document.getElementById('planoFinal');
+  if (planoFinal) planoFinal.style.display = 'none';
+}
+
 /* ---------- Gerar Plano ---------- */
 function gerarPlano(){
   const form = document.forms['planoForm'];
 
-  // Validação
-  const requiredFields = ['escola', 'professor', 'disciplina', 'tema', 'classe', 'turma', 'duracao', 'data'];
-  for (const fieldName of requiredFields) {
-    if (!form[fieldName].value.trim()) {
-      alert(`O campo "${fieldName}" é obrigatório.`);
-      form[fieldName].focus();
-      return;
-    }
+// 🔹 Validação dos campos obrigatórios
+const requiredFields = ['escola', 'professor', 'disciplina', 'tema', 'classe', 'turma', 'duracao', 'data'];
+for (const fieldName of requiredFields) {
+  if (!form[fieldName].value.trim()) {
+    alert(`O campo "${fieldName}" é obrigatório.`);
+    form[fieldName].focus();
+    cancelarLoader(); // cancela o loader e volta ao formulário
+    return;
   }
+}
 
   // Cabeçalhos
   document.getElementById('dadosEsquerda').innerHTML = `
@@ -406,92 +454,5 @@ function gerarPlano(){
     <tr data-funcao="Domínio e Consolidação">
       <td>${escapeHtml(tempo3)}</td>
       <td>Domínio e Consolidação</td>
-      <td contenteditable="true">Exercícios sobre aplicação</td>
-      <td contenteditable="true">• Passa os exercícios no quadro<br>• Orienta a resolução dos exercícios<br>• Passa de carteira em carteira a verificar a resolução</td>
-      <td contenteditable="true">• Transcrevem os exercícios aos cadernos<br>• Resolvem os exercícios no ${isClasseInicial ? 'livro do aluno' : 'caderno'} individualmente</td>
-      <td>${criarSelectMetodo("Trabalho Independente")}</td>
-      <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Caderno, esferográfica, livro do aluno'}</td>
-    </tr>
-    <tr data-funcao="Controlo e Avaliação">
-      <td>${escapeHtml(tempo4)}</td>
-      <td>Controlo e Avaliação</td>
-      <td contenteditable="true">• Correção dos exercícios<br>• Breve resumo da aula<br>• Marcação do TPC</td>
-      <td contenteditable="true">• Corrige os exercícios apresentados<br>• Resume os pontos principais<br>• Faz a marcação o TPC</td>
-      <td contenteditable="true">• Apresentam os exercícios corrigidos<br>• Prestam atenção e anotam o resumo<br>• Anotam o TPC no ${isClasseInicial ? 'livro do aluno' : 'caderno'}</td>
-      <td>${criarSelectMetodo("Trabalho Independente")}</td>
-      <td contenteditable="true">${isClasseInicial ? meiosEnsinoIniciais : 'Quadro, caderno, esferográfica, apagador'}</td>
-    </tr>`;
-
-  // Mostrar preview
-  document.getElementById('planoFinal').style.display = 'block';
-  document.getElementById('btnVoltarFormulario').style.display = 'inline-block'; // ← mostra botão
-  document.forms['planoForm'].style.display = 'none'; // ← esconde formulário
-  document.getElementById('avisoExportacao').style.display = 'block';
-  setTimeout(()=>document.getElementById('avisoExportacao').style.display='none', 9000);
-
-  // Salvar plano
-  atualizarPlanoSalvo();
-  mostrarMensagem('Plano gerado e salvo na sessão.');
-  atualizarBotaoAnexoInferior();
-}
-
-/* ---------- Função Voltar ao Formulário ---------- */
-function voltarAoFormulario() {
-  const form = document.forms['planoForm'];
-  form.style.display = 'block';
-  document.getElementById('planoFinal').style.display = 'none';
-  document.getElementById('btnVoltarFormulario').style.display = 'none';
-}
-function irParaPagamento() {
-  const planoData = {
-    escola: document.forms['planoForm'].escola.value,
-    professor: document.forms['planoForm'].professor.value,
-    disciplina: document.forms['planoForm'].disciplina.value,
-    unidade: document.forms['planoForm'].unidade.value,
-    tema: document.forms['planoForm'].tema.value,
-    tipo: document.forms['planoForm'].tipo.value,
-    classe: document.forms['planoForm'].classe.value,
-    turma: document.forms['planoForm'].turma.value,
-    licao: document.forms['planoForm'].licao.value,
-    duracao: document.forms['planoForm'].duracao.value,
-    data: document.forms['planoForm'].data.value,
-    materiais: materiais,
-    objetivos: document.getElementById('objetivosCampo').value,
-    tabela: document.getElementById('tabelaPlano').outerHTML,
-    anexoTipo: anexoSalvo ? anexoSalvo.tipo : null,
-    anexoImagem: (anexoSalvo && anexoSalvo.tipo === 'imagem') ? anexoSalvo.data : null,
-    anexoTexto: (anexoSalvo && anexoSalvo.tipo === 'texto') ? anexoSalvo.data : ""
-  };
-
-  // Salva os dados para o pagamento.html recuperar
-  sessionStorage.setItem("planoData", JSON.stringify(planoData));
-
-  // Vai para a tela de pagamento
-  window.location.href = "pagamento.html";
-        }
-/* ---------- Adicionar Atividade ---------- */
-function abrirNovoBloco(){
-  const container = document.getElementById('novoBlocoContainer');
-  container.innerHTML = '';
-  const div = document.createElement('div');
-  div.className = 'novoBloco';
-  div.innerHTML = `
-    <label>Escolha a Função Didáctica:</label>
-    <select id="seletorFuncaoAdd">
-      <option>Introdução e Motivação</option>
-      <option>Mediação e Assimilação</option>
-      <option>Domínio e Consolidação</option>
-      <option>Controlo e Avaliação</option>
-    </select>
-    <label style="margin-top:8px">Conteúdo (nova atividade):</label>
-    <textarea id="conteudoNovo" style="height:60px;"></textarea>
-    <label style="margin-top:6px">Atividade do professor:</label>
-    <textarea id="profNovo" style="height:60px;"></textarea>
-    <label style="margin-top:6px">Atividade dos alunos:</label>
-    <textarea id="alunoNovo" style="height:60px;"></textarea>
-    <div style="display:flex; gap:8px; margin-top:8px;">
-      <button type="button" onclick="adicionarAtividadeAoBloco()">Adicionar</button>
-    </div>`;
-  container.appendChild(div);
-}
-</script>
+      <td contenteditable="true">•Exercícios de aplicação<br>• Verificação da resolução dos exercícios</td>
+      <td contenteditabl
