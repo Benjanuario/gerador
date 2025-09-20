@@ -96,14 +96,43 @@
         <label>Objetivos Específicos:</label>
         <textarea id="objetivosCampo" name="objetivos" required style="height:90px;"></textarea>
         <div style="display:flex; gap:8px; margin-top:6px;">
-          <button type="button" class="secondary" onclick="gerarObjetivosLocal()" style="width:140px;">Gerar Objetivos</button>
-          <button type="button" class="warn" onclick="gerarNovosObjetivos()" style="width:120px;">🔄 Gerar Novos</button>
+          <button type="button" class="secondary" onclick="gerarObjetivosLocal()" style="padding:10px 20px; 
+           background: linear-gradient(90deg, #0d6efd, #6610f2);
+           color:white; 
+           border:none; 
+           border-radius:12px; 
+           cursor:pointer; 
+           font-weight:bold;
+           box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+           transition: 0.3s;">
+    GERAR OBJECTIVOS ESPECÍFICOS</button>
+          <button type="button" class="warn" onclick="gerarNovosObjetivos()" style="padding:10px 20px; 
+               background: #ffc107; 
+               color:black; 
+               border:none; 
+               border-radius:12px; 
+               cursor:pointer; 
+               font-weight:bold;
+               box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+               transition: 0.3s;">
+    ♻️ALTERAR OBJECTIVOS</button>
         </div>
       </div>
 
       <div style="margin-top:10px;">
-        <button type="button" onclick="iniciarGeracaoPlano()">Gerar Plano de Aula</button>
-      </div>
+  <button type="button" class="secondary" onclick="iniciarGeracaoPlano()" 
+          style="padding:10px 20px; 
+                 background: linear-gradient(90deg, #0d6efd, #6610f2);
+                 color:white; 
+                 border:none; 
+                 border-radius:12px; 
+                 cursor:pointer; 
+                 font-weight:bold;
+                 box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+                 transition: 0.3s;">
+    📝 GERAR PLANO DE AULA
+  </button>
+</div>
     </form>
 
     <div id="avisoExportacao" class="small" style="display:none;color:#c00;">⚠️ Exporte o plano em modo horizontal para melhor visualização em PDF.</div>
@@ -111,7 +140,7 @@
 
 <!-- Botão voltar ao formulário -->
 <button id="btnVoltarFormulario" onclick="voltarAoFormulario()" style="display:none; margin-bottom:10px;">
-  Voltar ao Formulário 👆
+  VOLTAR AO FORMULÁRIO 👆
 </button>
 
 <!-- PREVIEW / PLANO -->
@@ -142,12 +171,24 @@
       </table>
 
 <!-- Controles de Anexo -->
-<div id="anexoControls" style="margin-top:15px;">
-  <button id="btnAdicionarAnexo" type="button" onclick="abrirAnexo()" 
-          style="padding:8px 14px; background:#0d6efd; color:white; border:none; border-radius:6px; cursor:pointer;">
-    📎 Adicionar Anexo
-  </button>
-</div>
+<button id="btnAdicionarAnexo" type="button" onclick="abrirAnexo()"
+    style="padding:10px 20px; 
+           background: linear-gradient(90deg, #0d6efd, #6610f2);
+           color:white; 
+           border:none; 
+           border-radius:12px; 
+           cursor:pointer; 
+           font-weight:bold;
+           box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+           transition: 0.3s;">
+    📋ADICIONAR ANEXO (Opcional)🖇
+</button>
+
+<script>
+  const btn = document.getElementById("btnAdicionarAnexo");
+  btn.onmouseover = () => btn.style.transform = "scale(1.05)";
+  btn.onmouseout = () => btn.style.transform = "scale(1)";
+</script>
 
 <!-- Container visual do anexo salvo -->
 <div id="anexoPreview" style="margin-top:12px; border:2px solid #000; border-radius:8px; padding:10px; display:none;">
@@ -158,7 +199,17 @@
         <Benjanuario type="button" onclick="abrirNovoBloco()">
         <div id="novoBlocoContainer"></div>
       </div>
-        <button type="button" onclick="irParaPagamento()" style="margin-left:8px;">Exportar para PDF</button>
+        <button type="button" onclick="irParaPagamento()" style="padding:10px 20px; 
+           background: linear-gradient(90deg, #0d6efd, #6610f2);
+           color:white; 
+           border:none; 
+           border-radius:12px; 
+           cursor:pointer; 
+           font-weight:bold;
+           box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+           transition: 0.3s;">
+    📥EXPORTAR PDF (BAIXAR O PLANO) = 5 Mts
+</button>
       </div>
     </div>
   </div>
@@ -170,8 +221,8 @@
   <div class="message" id="loaderMessage" style="margin-top:20px; font-size:16px; font-style:italic;">Iniciando...</div>
 
   <!-- BOTÃO visível DURANTE o loader -->
-  <button id="loaderVoltarBtn" style="display:none; margin-top:12px; padding:8px 12px; border-radius:6px; border:1px solid #ccc; background:#fff; cursor:pointer;"
-          onclick="cancelarLoader()">Voltar ao Formulário</button>
+  <button id="loaderVoltarBtn" style="display:none; margin-top:12px; padding:8px 12px; border-radius:6px; border:1px solid #ccc; background:#6610f2; cursor:pointer;"
+          onclick="cancelarLoader()">❌CANCELAR O PROCESSO EM EXECUÇÃO</button>
 </div>
 
 <style>
@@ -290,12 +341,12 @@ function gerarNovosObjetivos(){
 
   const objetivos = [
     `${vC.charAt(0).toUpperCase()+vC.slice(1)} os conceitos fundamentais de "${tema}"`,
-    `${vP.charAt(0).toUpperCase()+vP.slice(1)} uma atividade prática relacionada a "${tema}"`,
+    `${vP.charAt(0).toUpperCase()+vP.slice(1)} uma actividade prática relacionada a "${tema}"`,
     `${vA.charAt(0).toUpperCase()+vA.slice(1)} a importância de "${tema}" no contexto social`
   ];
 
   document.getElementById('objetivosCampo').value = objetivos.join(";\n");
-  mostrarMensagem('Objetivos gerados.');
+  mostrarMensagem('Objectivos gerados.');
 }
 // Variável global para controlar o interval do loader
 let _planoLoaderInterval = null;
@@ -436,7 +487,7 @@ for (const fieldName of requiredFields) {
   const objetivosText = form.objetivos.value.trim();
   document.getElementById('listaObjetivos').innerHTML = objetivosText ? objetivosText.split(';\n').map(l=>`<li>${escapeHtml(l)}</li>`).join('') : '';
 
-  // --- TABELA (CORPO) ---
+    // --- TABELA (CORPO) ---
   const classeNum = String(form.classe.value || '').replace(/[^\d]/g,'');
   const isClasseInicial = (classeNum === '1' || classeNum === '2');
   const meiosEnsinoIniciais = 'Livro do aluno';
