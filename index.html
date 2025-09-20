@@ -258,18 +258,25 @@
         telefone: telefone.value.trim()
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbwz-h_uBAyVqf0EPQWs9mim5LwEPZe0r1dt4UgLI5MTKf09BwbL4vZVzI0YCnpOKiRC/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(() => {
-        alert("Informações enviadas com sucesso!");
-        fecharFormulario();
-        [nome, email, escola, telefone].forEach(input => input.value = "");
-      })
-      .catch(() => alert("Erro ao enviar: Verifique sua conexão com a internet."))
-      .finally(() => spinner.classList.remove("active"));
+fetch("https://script.google.com/macros/s/AKfycbzpB4sI8FN7bxjfzqO7kL9qbkB-DN9NR1qEdptGDW__xddc1d7jPXru8Qr6lfa2HLn-XQ/exec", {
+  method: "POST",
+  body: JSON.stringify(data),
+  headers: { "Content-Type": "application/json" }
+})
+.then(response => {
+  if (!response.ok) throw new Error("Erro na resposta do servidor: " + response.status);
+  return response.json(); // 👈 Isso é essencial!
+})
+.then(() => {
+  alert("Informações enviadas com sucesso!");
+  fecharFormulario();
+  [nome, email, escola, telefone].forEach(input => input.value = "");
+})
+.catch((error) => {
+  console.error("Erro detalhado:", error);
+  alert("Erro ao enviar: " + error.message);
+})
+.finally(() => spinner.classList.remove("active"));
     }
   </script>
 </body>
