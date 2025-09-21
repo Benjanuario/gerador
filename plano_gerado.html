@@ -655,6 +655,8 @@ function irParaPagamento() {
     const texto = sel.value || "—";
     td.innerHTML = texto; // remove o select e mantém só o método escolhido
   });
+
+  // Salva todos os dados necessários, incluindo o HTML completo do preview!
   const planoData = {
     escola: document.forms['planoForm'].escola.value,
     professor: document.forms['planoForm'].professor.value,
@@ -673,7 +675,9 @@ function irParaPagamento() {
     tabela: document.getElementById('tabelaPlano').outerHTML,
     anexoTipo: anexoSalvo ? anexoSalvo.tipo : null,
     anexoImagem: (anexoSalvo && anexoSalvo.tipo === 'imagem') ? anexoSalvo.data : null,
-    anexoTexto: (anexoSalvo && anexoSalvo.tipo === 'texto') ? anexoSalvo.data : ""
+    anexoTexto: (anexoSalvo && anexoSalvo.tipo === 'texto') ? anexoSalvo.data : "",
+    // ESSENCIAL: salva o HTML completo do preview!
+    html: document.getElementById('planoFinal').innerHTML
   };
 
   // Salva os dados para o pagamento.html recuperar
