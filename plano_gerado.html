@@ -537,7 +537,15 @@ function cancelarLoader() {
 
 /* ---------- Gerar Plano ---------- */
 function gerarPlano(){
-  const form = document.forms['planoForm'];
+  const planoData = {
+  disciplina: document.forms['planoForm'].disciplina.value,
+  classe: document.forms['planoForm'].classe.value,
+  data: document.forms['planoForm'].data.value,
+  html: document.getElementById('planoFinal').innerHTML,
+  anexoSalvo: anexoSalvo || null
+};
+
+sessionStorage.setItem("planoData", JSON.stringify(planoData));
 
 // 🔹 Validação dos campos obrigatórios
 const requiredFields = ['escola', 'professor', 'disciplina', 'tema', 'classe', 'turma', 'duracao', 'data'];
