@@ -630,6 +630,14 @@ for (const fieldName of requiredFields) {
   atualizarPlanoSalvo();
   mostrarMensagem('Plano gerado e salvo na sessão.');
   atualizarBotaoAnexoInferior();
+  const planoData = {
+  disciplina: form.disciplina.value,
+  classe: form.classe.value,
+  data: form.data.value,
+  html: document.getElementById('planoFinal').innerHTML,
+  anexoSalvo: anexoSalvo || null
+};
+sessionStorage.setItem("planoData", JSON.stringify(planoData));
 }
 
 /* ---------- Função Voltar ao Formulário ---------- */
