@@ -318,34 +318,48 @@ function validarCodigo(){
         }
 
         // --- ANEXO ---
-        let anexoY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : lastY + 20;
+let anexoY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : lastY + 20;
 
-        if (planoData.anexoSalvo) {
-          if (planoData.anexoSalvo.tipo === 'imagem' && planoData.anexoSalvo.data) {
-            if (anexoY > doc.internal.pageSize.getHeight() - 50) {
-              doc.addPage();
-              anexoY = 20;
-            }
-            doc.text("Anexo - Imagem:", 10, anexoY);
-            anexoY += 10;
+if (planoData.anexoSalvo && planoData.anexoSalvo.data) {
+  
+  if (planoData.anexoSalvo.tipo === 'imagem') {
+    try {
+      // Se imagem for maior que a página, adiciona página nova
+      if (anexoY > doc.internal.pageSize.getHeight() - 50) {
+        doc.addPage();
+        anexoY = 20;
+      }
 
-            const imgProps = doc.getImageProperties(planoData.anexoSalvo.data);
-            const pageWidth = doc.internal.pageSize.getWidth() - 20;
-            const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
+      doc.text("Anexo - Imagem:", 10, anexoY);
+      anexoY += 10;
 
-            doc.addImage(planoData.anexoSalvo.data, 'JPEG', 10, anexoY, pageWidth, imgHeight);
-          } else if (planoData.anexoSalvo.tipo === 'texto' && planoData.anexoSalvo.data) {
-            if (anexoY > doc.internal.pageSize.getHeight() - 30) {
-              doc.addPage();
-              anexoY = 20;
-            }
-            doc.text("Anexo - Texto Adicional:", 10, anexoY);
-            anexoY += 10;
-            const lines = doc.splitTextToSize(planoData.anexoSalvo.data, doc.internal.pageSize.getWidth() - 20);
-            doc.text(lines, 10, anexoY);
-          }
-        }
+      const imgProps = doc.getImageProperties(planoData.anexoSalvo.data);
 
+      const pageWidth = doc.internal.pageSize.getWidth() - 14; // margens 7mm cada lado
+      const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
+
+      doc.addImage(planoData.anexoSalvo.data, 'JPEG', 7, anexoY, pageWidth, imgHeight);
+
+    } catch (e) {
+      console.error("Erro ao adicionar a imagem do anexo:", e);
+      doc.text("⚠️ Não foi possível carregar o anexo da imagem.", 10, anexoY);
+    }
+
+  } else if (planoData.anexoSalvo.tipo === 'texto') {
+    if (anexoY > doc.internal.pageSize.getHeight() - 30) {
+      doc.addPage();
+      anexoY = 20;
+    }
+    doc.text("Anexo - Texto Adicional:", 10, anexoY);
+    anexoY += 10;
+
+    const lines = doc.splitTextToSize(planoData.anexoSalvo.data, doc.internal.pageSize.getWidth() - 14);
+    doc.text(lines, 7, anexoY); // margem esquerda 7mm
+  }
+
+} else {
+  console.warn("Nenhum anexo foi capturado ou os dados estão inválidos.");
+}
         // Salvar PDF com nome personalizado
         const disciplina = planoData.disciplina || "";
         const classe = planoData.classe || "";
