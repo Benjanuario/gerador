@@ -170,9 +170,7 @@ function validarCodigo(){
     })
     .then(data => {
       if(data && data.valido){
-        msg.style.color = "#28a745";
-        msg.innerText = `🎉 Código válido! PDFs restantes: ${data.restante}`;
-
+        
         const planoDataJSON = sessionStorage.getItem("planoData");
         if(!planoDataJSON){
             alert("❌ Nenhum plano encontrado. Gere o plano antes de tentar desbloquear.");
@@ -419,6 +417,10 @@ historico.push({
 });
 
 localStorage.setItem("historicoPlanos", JSON.stringify(historico));
+        // === Só agora mostra a mensagem de sucesso e PDFs restantes ===
+msg.style.color = "#28a745";
+msg.innerText = `🎉 Código válido! PDFs restantes: ${data.restante}`;
+alert("✅ PDF desbloqueado e baixado com sucesso!");
 
         alert("✅ PDF desbloqueado e baixado com sucesso!");
       } else {
