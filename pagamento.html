@@ -317,36 +317,95 @@ function validarCodigo(){
           });
         }
 
-// === ANEXO COM CAIXA ===
-if (planoData.anexoTipo && (planoData.anexoImagem || planoData.anexoTexto)) {
-  const margemX = 20;
-  const largura = 170;
-  let alturaBox = 0;
+// === BLOCO ROBUSTO DE ANEXO (substituir o bloco antigo) ===
+(() => {
+  // Normaliza formatos antigos e novos
+  const anexoSalvo = planoData.anexoSalvo || null;
+  const anexoTipo = (planoData.anexoTipo) || (anexoSalvo && anexoSalvo.tipo) || null;
+  const anexoImagem = (planoData.anexoImagem) || (anexoSalvo && anexoSalvo.tipo === 'imagem' ? anexoSalvo.data : null);
+  const anexoTexto = (planoData.anexoTexto) || (anexoSalvo && anexoSalvo.tipo === 'texto' ? anexoSalvo.data : null);
 
-  if (planoData.anexoTipo === "imagem") {
-    alturaBox = 120;
-  } else if (planoData.anexoTipo === "texto") {
-    alturaBox = 50; // altura inicial, ajusta depois
+  console.log("DEBUG - anexo detectado:", { anexoTipo, temImagem: !!anexoImagem, temTexto: !!anexoTexto });
+
+  if (!anexoTipo) {
+    console.warn("Nenhum anexo detectado em planoData.");
+    return;
   }
 
-  // Desenha borda
-  doc.setDrawColor(0, 0, 0);
-  doc.rect(margemX, doc.lastAutoTable.finalY + 15, largura, alturaBox);
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 7; // mm
+  const containerX = margin;
+  const containerW = pageW - margin * 2;
 
-  // Escreve título
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text("Anexo", margemX + 2, doc.lastAutoTable.finalY + 25);
+  // calcula Y inicial (usa lastAutoTable se existir; senão usa lastY se houver)
+  let startY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 8 : (typeof lastY !== 'undefined' ? lastY + 8 : 20);
+  if (startY > pageH - margin - 10) { doc.addPage(); startY = margin + 5; }
 
-  // Conteúdo do anexo
-  if (planoData.anexoTipo === "imagem" && planoData.anexoImagem) {
-    doc.addImage(planoData.anexoImagem, "PNG", margemX + 10, doc.lastAutoTable.finalY + 30, 150, 100);
-  } else if (planoData.anexoTipo === "texto" && planoData.anexoTexto) {
+  // Função utilitária para desenhar caixa e título, retorna Y do conteúdo
+  const desenharCaixa = (h) => {
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.rect(containerX, startY, containerW, h);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Anexo", containerX + 2, startY + 8);
+    return startY + 10;
+  };
+
+  // ===== Imagem =====
+  if (anexoTipo === 'imagem' && anexoImagem) {
+    try {
+      // valida se é DataURL
+      const isDataImg = /^data:image\/(png|jpeg|jpg);base64,/i.test(anexoImagem);
+      if (!isDataImg) {
+        console.warn("Anexo imagem não é DataURL (base64). Se for blob/URL precisa ser convertido para dataURL antes de salvar no sessionStorage).");
+        doc.setFontSize(10);
+        doc.text("⚠️ Anexo de imagem não está em formato DataURL e não pôde ser carregado.", containerX + 3, startY + 10);
+        return;
+      }
+
+      const mime = (anexoImagem.match(/^data:image\/(png|jpeg|jpg);base64,/i) || [])[1].toLowerCase();
+      const format = (mime === 'png') ? 'PNG' : 'JPEG';
+      const imgProps = doc.getImageProperties(anexoImagem);
+
+      // calcula dimensões máximas dentro do container
+      const maxW = containerW - 6;
+      const maxH = pageH - startY - margin - 5;
+      let imgW = maxW;
+      let imgH = (imgProps.height * imgW) / imgProps.width;
+      if (imgH > maxH) {
+        imgH = maxH;
+        imgW = (imgProps.width * imgH) / imgProps.height;
+      }
+
+      const caixaH = imgH + 15;
+      if (startY + caixaH > pageH - margin) { doc.addPage(); startY = margin + 5; }
+
+      const contentY = desenharCaixa(caixaH);
+      doc.addImage(anexoImagem, format, containerX + 3, contentY + 3, imgW, imgH);
+
+    } catch (err) {
+      console.error("Erro ao inserir imagem no PDF:", err);
+      doc.setFontSize(10);
+      doc.text("⚠️ Erro ao carregar o anexo de imagem.", containerX + 3, startY + 10);
+    }
+
+  // ===== Texto =====
+  } else if (anexoTipo === 'texto' && anexoTexto) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.text(planoData.anexoTexto, margemX + 5, doc.lastAutoTable.finalY + 35, { maxWidth: largura - 10 });
+    const linhas = doc.splitTextToSize(anexoTexto, containerW - 6);
+    const lineHeight = 6; // mm aproximado por linha
+    const contentH = linhas.length * lineHeight + 10;
+    if (startY + contentH > pageH - margin) { doc.addPage(); startY = margin + 5; }
+    const contentY = desenharCaixa(contentH);
+    doc.text(linhas, containerX + 3, contentY + 4);
+
+  } else {
+    console.warn("Anexo detectado mas sem conteúdo válido (imagem/texto).");
   }
-}
+})();
         // Salvar PDF com nome personalizado
         const disciplina = planoData.disciplina || "";
         const classe = planoData.classe || "";
