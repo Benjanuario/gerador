@@ -100,7 +100,7 @@ button.confirmar-btn:hover { background-color:#218838; transform: translateY(-2p
 </div>
 
 <div class="input-container" id="input-codigo">
-  <input type="text" id="codigo-acesso" placeholder="Introduza o Código de Desbloqueio" maxlength="8">
+  <input type="text" id="codigo-acesso" placeholder="O Código de Acesso" maxlength="8">
   <span id="feedback-codigo" style="color:#dc3545; font-size:13px; display:block; text-align:center; margin-top:5px;"></span>
   <button class="confirmar-btn" onclick="validarCodigo()">Confirmar</button>
 </div>
@@ -364,7 +364,7 @@ function validarCodigo(){
   doc.rect(margemX, posY, largura, alturaBox);
 
   // título ANEXO centralizado (em maiúsculas)
-  doc.setFont("helvetica", "bold");
+  doc.setFont("Times", "bold");
   doc.setFontSize(12);
   doc.text("ANEXO", margemX + largura / 2, posY + 8, { align: "center" });
 
@@ -386,12 +386,12 @@ function validarCodigo(){
       doc.addImage(anexImg, fmt, imgX, imgY, imgW, imgH);
     } catch (err) {
       console.error('Erro ao inserir imagem do anexo:', err);
-      doc.setFont("helvetica", "normal");
+      doc.setFont("Times", "normal");
       doc.setFontSize(10);
       doc.text("Erro ao inserir imagem do anexo.", margemX + 5, posY + 18);
     }
   } else if (anexType === "texto" && anexTxt) {
-    doc.setFont("helvetica", "normal");
+    doc.setFont("Times", "normal");
     doc.setFontSize(10);
     const txtLines = doc.splitTextToSize(anexTxt, largura - 10);
     doc.text(txtLines, margemX + 5, posY + 15);
