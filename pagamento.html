@@ -387,12 +387,12 @@ function validarCodigo(){
     } catch (err) {
       console.error('Erro ao inserir imagem do anexo:', err);
       doc.setFont("Times", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(12);
       doc.text("Erro ao inserir imagem do anexo.", margemX + 5, posY + 18);
     }
   } else if (anexType === "texto" && anexTxt) {
     doc.setFont("Times", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     const txtLines = doc.splitTextToSize(anexTxt, largura - 10);
     doc.text(txtLines, margemX + 5, posY + 15);
   }
