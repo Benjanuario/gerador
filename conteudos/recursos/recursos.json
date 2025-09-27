@@ -1,4 +1,56 @@
-[
-  { "titulo": "Plano de Aula: Definição e Importância", "definicao": "O plano de aula é uma ferramenta essencial na prática pedagógica, funcionando como um guia estruturado que orienta o professor na organização e execução das atividades de ensino. Ele detalha o conteúdo a ser abordado, os objetivos de aprendizagem, as metodologias a serem aplicadas, os recursos necessários e os critérios de avaliação, proporcionando clareza e foco ao processo de ensino-aprendizagem.", "conceito_completo": "Um plano de aula é um documento pedagógico que serve como guia para o professor durante o desenvolvimento de suas atividades em sala de aula. Ele contém objetivos claros, a descrição das atividades a serem realizadas, os recursos necessários, a metodologia a ser aplicada e os critérios de avaliação. O plano de aula organiza os processos de ensino e de aprendizagem de forma estruturada, sendo fundamental para qualquer prática educativa.", "importancia": "O planejamento de aula é fundamental para que qualquer professor ou professora possa atingir o sucesso no processo de ensino-aprendizagem. Ele permite que o docente tenha uma visão clara dos objetivos a serem alcançados, das estratégias a serem utilizadas e dos recursos necessários, facilitando a gestão do tempo e a adaptação às necessidades dos alunos. Além disso, o plano de aula serve como um instrumento de reflexão e avaliação, possibilitando ajustes e melhorias contínuas na prática pedagógica.", "estrutura_basica": { "identificacao": "Dados como disciplina, série/turma, data e duração da aula.", "tema": "Assunto central a ser abordado.", "objetivos": "O que se espera que os alunos aprendam ou desenvolvam durante a aula.", "conteudo": "Informações e conceitos que serão trabalhados.", "metodologia": "Estratégias e técnicas de ensino a serem utilizadas.", "recursos": "Materiais e ferramentas necessárias para a aula.", "atividades": "Tarefas e exercícios que os alunos realizarão.", "avaliacao": "Formas de verificar o aprendizado dos alunos.", "referencias": "Fontes consultadas para elaboração do plano." }, "exemplo_plano": { "descricao": "Para ilustrar a aplicação prática de um plano de aula, disponibiliza-se um exemplo detalhado que pode servir como modelo. Este plano foi elaborado para uma aula de Matemática e apresenta uma estrutura clara e objetiva, com todos os elementos essenciais para o planejamento eficaz de uma aula. Ao utilizá-lo como referência, é possível adaptar e personalizar conforme as necessidades específicas de sua turma e contexto educacional.", "link": "https://drive.google.com/file/d/1csZOyJltOvpmferKFiB2S81WkmBxMv0M/view?usp=drivesdk" }, "conclusao": "O plano de aula é uma ferramenta indispensável para o sucesso da prática pedagógica. Ele proporciona organização, clareza e direção ao processo de ensino-aprendizagem, permitindo que o professor atenda às necessidades dos alunos de forma eficaz e eficiente. Ao elaborar planos de aula bem estruturados, o docente contribui para a construção de um ambiente de aprendizagem mais produtivo e significativo." }
-]
-
+{
+  "articles": [
+    {
+      "title": "Definição de Plano de Aula",
+      "slug": "plano-de-aula",
+      "full_content": true,
+      "body": "O plano de aula é um documento que organiza de forma estruturada as atividades pedagógicas de uma aula ou conjunto de aulas. Ele permite que o professor tenha uma visão clara dos objetivos de aprendizagem, conteúdos, estratégias de ensino e métodos de avaliação. \n\n**Importância:**\n- Orienta o trabalho docente e facilita a organização do tempo.\n- Garante que todos os objetivos educacionais sejam contemplados.\n- Ajuda na adaptação da aula às necessidades dos alunos.\n\n**Impactos positivos no trabalho docente:**\n- Redução do improviso e maior eficácia no ensino.\n- Facilita o acompanhamento e avaliação do progresso dos alunos.\n- Proporciona aulas mais dinâmicas e envolventes.\n\n**Regras para estipulação de objetivos:**\n- Basear-se nos domínios de aprendizagem (cognitivo, afetivo, psicomotor).\n- Ser específico, mensurável, atingível, relevante e temporal.\n\n**Exemplo de plano de aula:**\n[Download em PDF](https://drive.google.com/file/d/1csZOyJltOvpmferKFiB2S81WkmBxMv0M/view?usp=drivesdk)"
+    },
+    {
+      "title": "Metodologia Colaborativa",
+      "slug": "metodologia-colaborativa",
+      "full_content": false,
+      "summary": "A metodologia colaborativa promove a construção colectiva do conhecimento entre alunos e professores. [Ler mais](conteudos/recursos/metodologia-colaborativa.html)"
+    }
+  ],
+  "videos": [
+    {
+      "title": "Como elaborar um plano de aula",
+      "url": "https://www.youtube.com/embed/VIDEO_ID_1"
+    },
+    {
+      "title": "Metodologias de ensino inovador",
+      "url": "https://www.youtube.com/embed/VIDEO_ID_2"
+    }
+  ],
+  "books": [
+    {
+      "title": "Pedagogia do Oprimido",
+      "author": "Paulo Freire",
+      "link": "https://www.example.com/livro1"
+    },
+    {
+      "title": "Didática Geral",
+      "author": "José Carlos Libâneo",
+      "link": "https://www.example.com/livro2"
+    }
+  ],
+  "faq": [
+    {
+      "question": "Como gerar planos de aula?",
+      "answer": "Utilize o gerador de planos de aula na página inicial. Selecione disciplina, classe e tema, depois clique em 'Gerar Plano'."
+    },
+    {
+      "question": "Como aceder aos vídeos?",
+      "answer": "Na aba 'Vídeos' desta página, clique no vídeo desejado para assistir."
+    },
+    {
+      "question": "Posso sugerir novos recursos?",
+      "answer": "Sim! Entre em contacto pelo WhatsApp ou email disponíveis na página inicial."
+    },
+    {
+      "question": "Como descarregar os livros recomendados?",
+      "answer": "Clique nos links fornecidos em cada item da secção Livros para aceder ou descarregar o conteúdo."
+    }
+  ]
+}
