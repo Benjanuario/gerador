@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Painel de Gestão - Recursos & Biblioteca</title>
+    <!-- Importa o Netlify CMS (Decap CMS) -->
+    <script src="https://unpkg.com/netlify-cms-app@2.15.72/dist/netlify-cms.js"></script>
+  </head>
+  <body>
+    <!-- O painel é carregado automaticamente aqui -->
+  </body>
+</html>
