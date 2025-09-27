@@ -1,4 +1,4 @@
-{
+
   "articles": [
     {
       "title": "Definição de Plano de Aula",
@@ -12,45 +12,3 @@
       "full_content": false,
       "summary": "A metodologia colaborativa promove a construção colectiva do conhecimento entre alunos e professores. [Ler mais](conteudos/recursos/metodologia-colaborativa.html)"
     }
-  ],
-  "videos": [
-    {
-      "title": "Como elaborar um plano de aula",
-      "url": "https://www.youtube.com/embed/VIDEO_ID_1"
-    },
-    {
-      "title": "Metodologias de ensino inovador",
-      "url": "https://www.youtube.com/embed/VIDEO_ID_2"
-    }
-  ],
-  "books": [
-    {
-      "title": "Pedagogia do Oprimido",
-      "author": "Paulo Freire",
-      "link": "https://www.example.com/livro1"
-    },
-    {
-      "title": "Didática Geral",
-      "author": "José Carlos Libâneo",
-      "link": "https://www.example.com/livro2"
-    }
-  ],
-  "faq": [
-    {
-      "question": "Como gerar planos de aula?",
-      "answer": "Utilize o gerador de planos de aula na página inicial. Selecione disciplina, classe e tema, depois clique em 'Gerar Plano'."
-    },
-    {
-      "question": "Como aceder aos vídeos?",
-      "answer": "Na aba 'Vídeos' desta página, clique no vídeo desejado para assistir."
-    },
-    {
-      "question": "Posso sugerir novos recursos?",
-      "answer": "Sim! Entre em contacto pelo WhatsApp ou email disponíveis na página inicial."
-    },
-    {
-      "question": "Como descarregar os livros recomendados?",
-      "answer": "Clique nos links fornecidos em cada item da secção Livros para aceder ou descarregar o conteúdo."
-    }
-  ]
-}
