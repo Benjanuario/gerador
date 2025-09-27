@@ -117,29 +117,29 @@
   });
 
   // Carregar conteúdo do JSON
-  fetch('conteudos/recursos.json')
-    .then(res => res.json())
-    .then(data => {
-      // Artigos
-      const articlesContainer = document.getElementById('articles-container');
-      data.articles.forEach(article => {
-        if(article.full_content){
-          articlesContainer.innerHTML += `
-            <div class="article-item">
-              <h3>${article.title}</h3>
-              <p>${article.body}</p>
-            </div>
-          `;
-        } else {
-          articlesContainer.innerHTML += `
-            <div class="article-preview">
-              <h3>${article.title}</h3>
-              <p>${article.summary}</p>
-              <a href="conteudos/recursos/${article.slug}.html">Ler Mais</a>
-            </div>
-          `;
-        }
-      });
+  fetch('conteudos/recursos/recursos.json')
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById('articles-container');
+    data.articles.forEach(article => {
+      if(article.full_content){
+        container.innerHTML += `
+          <div class="article-item">
+            <h3>${article.title}</h3>
+            <p>${article.body}</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML += `
+          <div class="article-preview">
+            <h3>${article.title}</h3>
+            <p>${article.summary}</p>
+            <a href="conteudos/recursos/${article.slug}.html">Ler Mais</a>
+          </div>
+        `;
+      }
+    });
+  });
 
       // Vídeos
       const videosContainer = document.getElementById('videos-container');
