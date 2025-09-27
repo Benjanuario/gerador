@@ -1,0 +1,18 @@
+backend:
+  name: github
+  repo: benjanuario/gerador   # substitui pelo nome exacto do teu repositório
+  branch: main                # ou "master", se a tua branch principal for essa
+
+media_folder: "uploads"       # onde as imagens vão ficar no repositório
+public_folder: "/uploads"     # como as imagens serão referenciadas no site
+
+collections:
+  - name: "recursos"
+    label: "Recursos & Biblioteca"
+    folder: "conteudos/recursos"   # aqui vão ficar os ficheiros .md
+    create: true
+    slug: "{{slug}}"               # gera o nome do ficheiro a partir do título
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Data", name: "date", widget: "datetime" }
+      - { label: "Conteúdo", name: "body", widget: "markdown" }
