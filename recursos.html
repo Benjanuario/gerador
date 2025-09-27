@@ -71,108 +71,41 @@
   <button onclick="showSection('faq', this)">FAQ</button>
 </div>
 
-<main>
-  <!-- Metodologias -->
-  <div id="metodologias" class="section active">
-    <h2>Metodologias & Recomendações de Livros</h2>
-    <div id="artigos-dinamicos"></div>
-    <div class="article-item">
-      <h3>Metodologia Activa</h3>
-      <p>Como aplicar actividades práticas para envolver os alunos, com exemplos e dicas. Recomendações de livros pedagógicos incluídas.</p>
-    </div>
-    <div class="article-item">
-      <h3>Aprendizagem Baseada em Projectos</h3>
-      <p>Passo a passo de projectos educativos, ideias de temas e resultados esperados. Livros sugeridos para apoiar a metodologia.</p>
-    </div>
-    <div class="article-item">
-      <h3>Ensino Diferenciado</h3>
-      <p>Estratégias para adaptar planos de aula às necessidades de cada aluno e optimizar o aprendizado em sala de aula.</p>
-    </div>
-    <div class="article-item">
-      <h3>Avaliação Formativa</h3>
-      <p>Como criar avaliações contínuas para acompanhar o progresso dos alunos, incluindo exemplos práticos.</p>
-    </div>
-    <div class="article-item">
-      <h3>Planeamento Eficiente</h3>
-      <p>Dicas práticas para organizar tempo, conteúdos e recursos pedagógicos de forma optimizada.</p>
-    </div>
-  </div>
 
-  <!-- Vídeos -->
-  <div id="videos" class="section">
-    <h2>Vídeos Educativos</h2>
-    <div class="video-item">
-      <h3>Como elaborar um plano de aula</h3>
-      <iframe src="https://www.youtube.com/embed/VIDEO_ID_1" title="Vídeo 1" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="video-item">
-      <h3>Metodologias de ensino inovador</h3>
-      <iframe src="https://www.youtube.com/embed/VIDEO_ID_2" title="Vídeo 2" frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="video-item">
-      <h3>Planeamento de actividades para 1º ciclo</h3>
-      <iframe src="https://www.youtube.com/embed/VIDEO_ID_3" title="Vídeo 3" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <!-- Livros -->
-  <div id="livros" class="section">
-    <h2>Livros Recomendados</h2>
-    <div class="book-item">
-      <h3>Pedagogia do Oprimido</h3>
-      <p>Autor: Paulo Freire. <a href="https://www.example.com/livro1" target="_blank">Link para compra/baixar</a></p>
-    </div>
-    <div class="book-item">
-      <h3>Didática Geral</h3>
-      <p>Autor: José Carlos Libâneo. <a href="https://www.example.com/livro2" target="_blank">Link para compra/baixar</a></p>
-    </div>
-    <div class="book-item">
-      <h3>Avaliação Educacional</h3>
       <p>Autor: Cipriano & Silva. <a href="https://www.example.com/livro3" target="_blank">Link para compra/baixar</a></p>
     </div>
   </div>
 
-  <!-- FAQ -->
-  <div id="faq" class="section">
-    <h2>Perguntas Frequentes</h2>
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Como gerar planos de aula?</span>
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">
-        <p>Utilize o gerador de planos de aula na página inicial. Selecione disciplina, classe e tema, depois clique em "Gerar Plano".</p>
-      </div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Como aceder aos vídeos?</span>
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">
-        <p>Na aba "Vídeos" desta página, clique no vídeo desejado para assistir.</p>
-      </div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Posso sugerir novos recursos?</span>
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">
-        <p>Sim! Entre em contacto pelo WhatsApp ou email disponíveis na página inicial.</p>
-      </div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>Como descarregar os livros recomendados?</span>
-        <i class="fas fa-chevron-down"></i>
-      </div>
-      <div class="faq-answer">
-        <p>Clique nos links fornecidos em cada item da secção Livros para aceder ou descarregar o conteúdo.</p>
-      </div>
-    </div>
+    <main>
+  <div id="articles-container">
+    <!-- Artigos carregados via JSON -->
   </div>
-</main>
+    </main>
+  <script>
+fetch('conteudos/recursos.json')
+  .then(res => res.json())
+  .then(articles => {
+    const container = document.getElementById('articles-container');
+    articles.forEach(article => {
+      if(article.full_content){
+        container.innerHTML += `
+          <div class="article-item">
+            <h3>${article.title}</h3>
+            <p>${article.body}</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML += `
+          <div class="article-preview">
+            <h3>${article.title}</h3>
+            <p>${article.summary}</p>
+            <a href="conteudos/recursos/${article.slug}.html">Ler Mais</a>
+          </div>
+        `;
+      }
+    });
+  });
+  </script>
 
 <footer>
   &copy; 2025 Gerador de Plano de Aula. Todos os direitos reservados. Benjanuário.
