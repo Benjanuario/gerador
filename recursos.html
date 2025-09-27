@@ -120,6 +120,8 @@
   fetch('conteudos/recursos/recursos.json')
   .then(res => res.json())
   .then(data => {
+
+    // Artigos
     const container = document.getElementById('articles-container');
     data.articles.forEach(article => {
       if(article.full_content){
@@ -134,47 +136,46 @@
           <div class="article-preview">
             <h3>${article.title}</h3>
             <p>${article.summary}</p>
-            <a href="conteudos/recursos/${article.slug}.html">Ler Mais</a>
           </div>
         `;
       }
     });
-  });
 
-      // Vídeos
-      const videosContainer = document.getElementById('videos-container');
-      data.videos.forEach(video => {
-        videosContainer.innerHTML += `
-          <div class="video-item">
-            <h3>${video.title}</h3>
-            <iframe src="${video.url}" title="${video.title}" frameborder="0" allowfullscreen></iframe>
-          </div>
-        `;
-      });
+    // Vídeos
+    const videosContainer = document.getElementById('videos-container');
+    data.videos.forEach(video => {
+      videosContainer.innerHTML += `
+        <div class="video-item">
+          <h3>${video.title}</h3>
+          <iframe src="${video.url}" title="${video.title}" frameborder="0" allowfullscreen></iframe>
+        </div>
+      `;
+    });
 
-      // Livros
-      const booksContainer = document.getElementById('books-container');
-      data.books.forEach(book => {
-        booksContainer.innerHTML += `
-          <div class="book-item">
-            <h3>${book.title}</h3>
-            <p>Autor: ${book.author}. <a href="${book.link}" target="_blank">Link para compra/baixar</a></p>
-          </div>
-        `;
-      });
+    // Livros
+    const booksContainer = document.getElementById('books-container');
+    data.books.forEach(book => {
+      booksContainer.innerHTML += `
+        <div class="book-item">
+          <h3>${book.title}</h3>
+          <p>Autor: ${book.author}. <a href="${book.link}" target="_blank">Link para compra/baixar</a></p>
+        </div>
+      `;
+    });
 
-      // FAQ
-      const faqContainer = document.getElementById('faq-container');
-      data.faq.forEach(f => {
-        faqContainer.innerHTML += `
-          <div class="faq-item">
-            <div class="faq-question"><span>${f.question}</span> <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer"><p>${f.answer}</p></div>
-          </div>
-        `;
-      });
-    })
-    .catch(err => console.error("Erro ao carregar JSON:", err));
+    // FAQ
+    const faqContainer = document.getElementById('faq-container');
+    data.faq.forEach(f => {
+      faqContainer.innerHTML += `
+        <div class="faq-item">
+          <div class="faq-question"><span>${f.question}</span> <i class="fas fa-chevron-down"></i></div>
+          <div class="faq-answer"><p>${f.answer}</p></div>
+        </div>
+      `;
+    });
+
+  })
+  .catch(err => console.error("Erro ao carregar JSON:", err));
 </script>
 
 </body>
