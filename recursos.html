@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recursos & Biblioteca - Gerador de Plano de Aula</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Times New Roman', Times, serif; font-size:12px; }
+    body { background: linear-gradient(135deg, #f0f7ff, #e6f4ff); color:#333; }
+
+    header {
+      background: linear-gradient(90deg, #007BFF, #00C6FF);
+      padding: 15px 20px; color: white;
+      text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    header h1 { font-size: 18px; }
+
+    .nav-buttons {
+      display: flex; justify-content: center; gap: 10px; margin: 15px 0;
+      flex-wrap: nowrap;
+    }
+    .nav-buttons button {
+      padding: 8px 14px; border:none; border-radius: 25px;
+      cursor:pointer; font-weight: 500; background:white; color:#007BFF;
+      transition: all 0.3s; font-size:12px;
+      white-space: nowrap;
+    }
+    .nav-buttons button:hover { background:#007BFF; color:white; box-shadow:0 2px 4px rgba(0,0,0,0.2);}
+    .nav-buttons button.active { background:#007BFF; color:white; }
+
+    main { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    .section { display:none; margin-bottom: 25px; }
+    .section.active { display:block; }
+
+    .section h2 { color:#007BFF; margin-bottom:12px; font-size:14px; }
+    .article-item, .video-item, .book-item, .faq-item {
+      background:white; padding:12px 16px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1);
+      margin-bottom:12px;
+    }
+    .article-item h3, .video-item h3, .book-item h3, .faq-item h3 { margin-bottom:6px; font-size:13px; }
+    .article-item p, .video-item p, .book-item p, .faq-item p { font-size:12px; }
+
+    /* Vídeos responsivos */
+    .video-item iframe {
+      width: 100%; height: 250px; border-radius:6px;
+    }
+
+    /* FAQ colapsável */
+    .faq-question {
+      cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; font-size:12px;
+    }
+    .faq-answer { display: none; margin-top:6px; font-size:12px; }
+    .faq-item.open .faq-answer { display: block; }
+
+    footer { text-align:center; padding:15px; font-size:11px; color:#666; margin-top:35px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Recursos & Biblioteca</h1>
+</header>
+
+<div class="nav-buttons">
+  <button class="active" onclick="showSection('metodologias', this)">Metodologias</button>
+  <button onclick="showSection('videos', this)">Vídeos</button>
+  <button onclick="showSection('livros', this)">Livros</button>
+  <button onclick="showSection('faq', this)">FAQ</button>
+</div>
+
+<main>
+  <!-- Metodologias -->
+  <div id="metodologias" class="section active">
+    <h2>Metodologias & Recomendações de Livros</h2>
+    <div id="artigos-dinamicos"></div>
+    <div class="article-item">
+      <h3>Metodologia Activa</h3>
+      <p>Como aplicar actividades práticas para envolver os alunos, com exemplos e dicas. Recomendações de livros pedagógicos incluídas.</p>
+    </div>
+    <div class="article-item">
+      <h3>Aprendizagem Baseada em Projectos</h3>
+      <p>Passo a passo de projectos educativos, ideias de temas e resultados esperados. Livros sugeridos para apoiar a metodologia.</p>
+    </div>
+    <div class="article-item">
+      <h3>Ensino Diferenciado</h3>
+      <p>Estratégias para adaptar planos de aula às necessidades de cada aluno e optimizar o aprendizado em sala de aula.</p>
+    </div>
+    <div class="article-item">
+      <h3>Avaliação Formativa</h3>
+      <p>Como criar avaliações contínuas para acompanhar o progresso dos alunos, incluindo exemplos práticos.</p>
+    </div>
+    <div class="article-item">
+      <h3>Planeamento Eficiente</h3>
+      <p>Dicas práticas para organizar tempo, conteúdos e recursos pedagógicos de forma optimizada.</p>
+    </div>
+  </div>
+
+  <!-- Vídeos -->
+  <div id="videos" class="section">
+    <h2>Vídeos Educativos</h2>
+    <div class="video-item">
+      <h3>Como elaborar um plano de aula</h3>
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID_1" title="Vídeo 1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="video-item">
+      <h3>Metodologias de ensino inovador</h3>
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID_2" title="Vídeo 2" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div class="video-item">
+      <h3>Planeamento de actividades para 1º ciclo</h3>
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID_3" title="Vídeo 3" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Livros -->
+  <div id="livros" class="section">
+    <h2>Livros Recomendados</h2>
+    <div class="book-item">
+      <h3>Pedagogia do Oprimido</h3>
+      <p>Autor: Paulo Freire. <a href="https://www.example.com/livro1" target="_blank">Link para compra/baixar</a></p>
+    </div>
+    <div class="book-item">
+      <h3>Didática Geral</h3>
+      <p>Autor: José Carlos Libâneo. <a href="https://www.example.com/livro2" target="_blank">Link para compra/baixar</a></p>
+    </div>
+    <div class="book-item">
+      <h3>Avaliação Educacional</h3>
+      <p>Autor: Cipriano & Silva. <a href="https://www.example.com/livro3" target="_blank">Link para compra/baixar</a></p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div id="faq" class="section">
+    <h2>Perguntas Frequentes</h2>
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Como gerar planos de aula?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        <p>Utilize o gerador de planos de aula na página inicial. Selecione disciplina, classe e tema, depois clique em "Gerar Plano".</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Como aceder aos vídeos?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        <p>Na aba "Vídeos" desta página, clique no vídeo desejado para assistir.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Posso sugerir novos recursos?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        <p>Sim! Entre em contacto pelo WhatsApp ou email disponíveis na página inicial.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Como descarregar os livros recomendados?</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="faq-answer">
+        <p>Clique nos links fornecidos em cada item da secção Livros para aceder ou descarregar o conteúdo.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 Gerador de Plano de Aula. Todos os direitos reservados. Benjanuário.
+</footer>
+
+<script>
+  function showSection(sectionId, button) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.nav-buttons button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    button.classList.add('active');
+  }
+
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      q.parentElement.classList.toggle('open');
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+async function carregarArtigos() {
+  try {
+    // Lista dos artigos em Markdown criados pelo CMS
+    const artigos = [
+      "conteudos/recursos/artigo1.md",
+      "conteudos/recursos/artigo2.md"
+    ];
+
+    const container = document.getElementById("artigos-dinamicos");
+
+    for (let ficheiro of artigos) {
+      const resposta = await fetch(ficheiro);
+      if (resposta.ok) {
+        const texto = await resposta.text();
+        const html = marked.parse(texto);
+
+        const div = document.createElement("div");
+        div.classList.add("article-item");
+        div.innerHTML = html;
+        container.appendChild(div);
+      }
+    }
+  } catch (erro) {
+    console.error("Erro ao carregar artigos:", erro);
+    document.getElementById("artigos-dinamicos").innerHTML =
+      "<p>Não foi possível carregar os recursos.</p>";
+  }
+}
+
+carregarArtigos();
+</script>
+</body>
+</html>
