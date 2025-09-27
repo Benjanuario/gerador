@@ -264,6 +264,23 @@
       background-color: #f9f9f9;
     }
   </style>
+  <style>
+  body.dark {
+    background: #121212;
+    color: #eee;
+  }
+  body.dark header {
+    background: linear-gradient(90deg, #222, #555);
+    color: #fff;
+  }
+  body.dark .sidebar {
+    background: #1e1e1e;
+    color: #eee;
+  }
+  body.dark .sidebar ul li:hover {
+    background: #333;
+  }
+  </style>
 </head>
 <body>
  <header>
@@ -292,6 +309,10 @@
     <li onclick="window.location.href='doar.html'"><i class="fas fa-gift"></i> Doar</li>
     <li><i class="fas fa-book"></i> Tema</li>
     <li><i class="fas fa-cog"></i> Definições</li>
+    <li>
+  <input type="checkbox" id="darkModeToggle" onchange="alternarTema()"> 
+  <label for="darkModeToggle">🌙 Modo Escuro</label>
+    </li>
     <li><i class="fas fa-info-circle"></i> Sobre</li>
     <li onclick="window.location.href='termos.html'">
       <i class="fas fa-shield-alt"></i> Termos e Políticas
@@ -460,6 +481,27 @@ fetch("https://script.google.com/macros/s/AKfycbzpB4sI8FN7bxjfzqO7kL9qbkB-DN9NR1
     }
   });
 });
+  </script>
+  <script>
+  function alternarTema() {
+    const checkbox = document.getElementById("darkModeToggle");
+    if (checkbox.checked) {
+      document.body.classList.add("dark");
+      localStorage.setItem("tema", "escuro");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("tema", "claro");
+    }
+  }
+
+  // carregar tema salvo
+  document.addEventListener("DOMContentLoaded", () => {
+    const temaSalvo = localStorage.getItem("tema");
+    if (temaSalvo === "escuro") {
+      document.body.classList.add("dark");
+      document.getElementById("darkModeToggle").checked = true;
+    }
+  });
   </script>
 </body>
 </html>
