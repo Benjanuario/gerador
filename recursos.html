@@ -71,11 +71,6 @@
   <button onclick="showSection('faq', this)">FAQ</button>
 </div>
 
-
-      <p>Autor: Cipriano & Silva. <a href="https://www.example.com/livro3" target="_blank">Link para compra/baixar</a></p>
-    </div>
-  </div>
-
     <main>
   <div id="articles-container">
     <!-- Artigos carregados via JSON -->
@@ -124,39 +119,6 @@ fetch('conteudos/recursos.json')
       q.parentElement.classList.toggle('open');
     });
   });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>
-async function carregarArtigos() {
-  try {
-    // Lista dos artigos em Markdown criados pelo CMS
-    const artigos = [
-      "conteudos/recursos/artigo1.md",
-      "conteudos/recursos/artigo2.md"
-    ];
-
-    const container = document.getElementById("artigos-dinamicos");
-
-    for (let ficheiro of artigos) {
-      const resposta = await fetch(ficheiro);
-      if (resposta.ok) {
-        const texto = await resposta.text();
-        const html = marked.parse(texto);
-
-        const div = document.createElement("div");
-        div.classList.add("article-item");
-        div.innerHTML = html;
-        container.appendChild(div);
-      }
-    }
-  } catch (erro) {
-    console.error("Erro ao carregar artigos:", erro);
-    document.getElementById("artigos-dinamicos").innerHTML =
-      "<p>Não foi possível carregar os recursos.</p>";
-  }
-}
-
-carregarArtigos();
 </script>
 </body>
 </html>
